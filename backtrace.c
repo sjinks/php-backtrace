@@ -40,18 +40,25 @@ void signal_handler(int sig, siginfo_t* si, void* unused)
 
 static void make_backtrace(int fd, zend_backtrace_globals* g TSRMLS_DC)
 {
-	smart_str s;
-	s.c = NULL;
+	smart_str s = { 0 };
 
 	smart_str_appends(&s, "Script: ");
 	smart_str_appends(&s, SG(request_info).path_translated ? SG(request_info).path_translated : "???");
 	smart_str_appendc(&s, '\n');
 
 	smart_str_0(&s);
+#if PHP_MAJOR_VERSION >= 7
+	safe_write(fd, ZSTR_VAL(s.s), ZSTR_LEN(s.s));
+#else
 	safe_write(fd, s.c, s.len);
+#endif
 
 	smart_str_free(&s);
+#if PHP_MAJOR_VERSION >=7
+	s.s = NULL;
+#else
 	s.c = NULL;
+#endif
 
 	if (EG(active) && EG(current_execute_data)) {
 		if (g->safe_backtrace) {
@@ -64,11 +71,13 @@ static void make_backtrace(int fd, zend_backtrace_globals* g TSRMLS_DC)
 
 	smart_str_appends(&s, "Dump succeeded.\n\n\n");
 	smart_str_0(&s);
+#if PHP_MAJOR_VERSION >= 7
+	safe_write(fd, ZSTR_VAL(s.s), ZSTR_LEN(s.s));
+#else
 	safe_write(fd, s.c, s.len);
+#endif
 
 	smart_str_free(&s);
-	s.c = NULL;
-
 	close(fd);
 }
 
@@ -122,7 +131,7 @@ void do_backtrace(TSRMLS_D)
 #endif
 
 	{
-		smart_str s = { NULL, 0, 0 };
+		smart_str s = { 0 };
 
 		long int x = (long int)getpid();
 		smart_str_appends(&s, "PID: ");
@@ -140,7 +149,11 @@ void do_backtrace(TSRMLS_D)
 		smart_str_appendc(&s, '\n');
 
 		smart_str_0(&s);
+#if PHP_MAJOR_VERSION >= 7
+		safe_write(fd, ZSTR_VAL(s.s), ZSTR_LEN(s.s));
+#else
 		safe_write(fd, s.c, s.len);
+#endif
 
 		smart_str_free(&s);
 	}
@@ -163,5 +176,4 @@ void do_backtrace(TSRMLS_D)
 	fprintf(stderr, "[%d]: close(%d)\n", getpid(), fd);
 	fflush(stderr);
 #endif
-
 }
