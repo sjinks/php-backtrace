@@ -18,7 +18,7 @@
 #include <Zend/zend_builtin_functions.h>
 
 #if PHP_MAJOR_VERSION >= 7
-#	include <Zend/zend_string.h>
+#	include <Zend/zend_smart_str.h>
 #else
 #	include <ext/standard/php_smart_str.h>
 #endif
