@@ -165,4 +165,3 @@ void do_backtrace(TSRMLS_D)
 #endif
 
 }
-

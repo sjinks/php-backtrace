@@ -13,4 +13,3 @@
 BACKTRACE_VISIBILITY_HIDDEN extern ssize_t safe_write(int fd, const void* buf, size_t size);
 
 #endif /* COMMON_H_ */
-

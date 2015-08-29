@@ -14,4 +14,3 @@ BACKTRACE_VISIBILITY_HIDDEN extern void call_backtrace(int fd, zend_backtrace_gl
 #endif
 
 #endif /* ZTS_SUPPORT_H_ */
-

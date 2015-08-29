@@ -17,4 +17,3 @@ BACKTRACE_VISIBILITY_HIDDEN extern void signal_handler(int sig, siginfo_t* si, v
 BACKTRACE_VISIBILITY_HIDDEN extern void do_backtrace(TSRMLS_D);
 
 #endif /* BACKTRACE_H_ */
-

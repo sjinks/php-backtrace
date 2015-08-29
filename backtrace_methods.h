@@ -14,4 +14,3 @@ BACKTRACE_VISIBILITY_HIDDEN extern void safe_backtrace(int fd TSRMLS_DC);
 BACKTRACE_VISIBILITY_HIDDEN extern void debug_backtrace(int fd, int skip_args TSRMLS_DC);
 
 #endif /* BACKTRACE_METHODS_H_ */
-

@@ -147,4 +147,3 @@ void call_backtrace(int fd, zend_backtrace_globals* g, backtrace_callback_t call
 }
 
 #endif
-

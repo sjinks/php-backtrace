@@ -34,4 +34,3 @@ ssize_t safe_write(int fd, const void* buf, size_t size)
 
 	return res;
 }
-
