@@ -16,7 +16,12 @@
 #include <main/SAPI.h>
 #include <Zend/zend_extensions.h>
 #include <Zend/zend_builtin_functions.h>
-#include <ext/standard/php_smart_str.h>
+
+#if PHP_MAJOR_VERSION >= 7
+#	include <Zend/zend_string.h>
+#else
+#	include <ext/standard/php_smart_str.h>
+#endif
 
 #include <signal.h>
 
