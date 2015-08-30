@@ -6,7 +6,12 @@ static tsrm_thread_end_func_t thread_end_func = NULL;
 static HashTable thread_ids;
 static MUTEX_T mutex;
 
-static void backtrace_thread_end_handler(THREAD_T thread_id, void*** tsrm_ls)
+static void backtrace_thread_end_handler(
+	THREAD_T thread_id
+#if PHP_MAJOR_VERSION < 7
+	, void*** tsrm_ls
+#endif
+)
 {
 #ifdef DEBUG
 	fprintf(stderr, "[%d] Registering a new thread: %lu\n", getpid(), (unsigned long int)thread_id);
@@ -14,14 +19,22 @@ static void backtrace_thread_end_handler(THREAD_T thread_id, void*** tsrm_ls)
 #endif
 
 	if (thread_end_func != NULL) {
+#if PHP_MAJOR_VERSION >= 7
+		thread_end_func(thread_id);
+#else
 		thread_end_func(thread_id, tsrm_ls);
+#endif
 	}
 
 	char buf[64];
 	unsigned long int tid = (unsigned long int)thread_id;
 	php_sprintf(buf, "%lu", tid);
 
+#if PHP_MAJOR_VERSION >= 7
+	zend_hash_str_add_empty_element(&thread_ids, buf, strlen(buf));
+#else
 	zend_hash_add_empty_element(&thread_ids, buf, strlen(buf) + 1);
+#endif
 }
 
 void backtrace_zts_startup(TSRMLS_D)
