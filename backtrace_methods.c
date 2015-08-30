@@ -4,7 +4,11 @@
 BACKTRACE_ATTRIBUTE_MALLOC static smart_str* arg_to_string(zval** arg, char* comma TSRMLS_DC)
 {
 	smart_str* res = (smart_str*)emalloc(sizeof(smart_str));
+#if PHP_MAJOR_VERSION >= 7
+	res->s = NULL;
+#else
 	res->c = NULL;
+#endif
 
 	if (arg && *arg) {
 		switch (Z_TYPE_PP(arg)) {
@@ -134,7 +138,11 @@ void safe_backtrace(int fd TSRMLS_DC)
 	int i = 1;
 	smart_str s;
 
+#if PHP_MAJOR_VERSION >= 7
+	s.s = NULL;
+#else
 	s.c = NULL;
+#endif
 
 	while (d) {
 		smart_str_append_long(&s, i);
@@ -223,10 +231,18 @@ void safe_backtrace(int fd TSRMLS_DC)
 		smart_str_appendc(&s, '\n');
 		smart_str_0(&s);
 
+#if PHP_MAJOR_VERSION >= 7
+		safe_write(fd, ZSTR_VAL(s.s), ZSTR_LEN(s.s));
+#else
 		safe_write(fd, s.c, s.len);
+#endif
 
 		smart_str_free(&s);
+#if PHP_MAJOR_VERSION >= 7
+		s.s = NULL;
+#else
 		s.c = NULL;
+#endif
 
 		d = d->prev_execute_data;
 		++i;
@@ -277,10 +293,18 @@ void debug_backtrace(int fd, int skip_args TSRMLS_DC)
 
 	smart_str_appends(&s, "Backtrace succeeded.\n");
 	smart_str_0(&s);
+#if PHP_MAJOR_VERSION >= 7
+	safe_write(fd, ZSTR_VAL(s.s), ZSTR_LEN(s.s));
+#else
 	safe_write(fd, s.c, s.len);
+#endif
 
 	smart_str_free(&s);
+#if PHP_MAJOR_VERSION >= 7
+	s.s = NULL;
+#else
 	s.c = NULL;
+#endif
 
 	HashPosition pos;
 	zval** current;
@@ -362,10 +386,18 @@ void debug_backtrace(int fd, int skip_args TSRMLS_DC)
 
 		smart_str_0(&s);
 
+#if PHP_MAJOR_VERSION >= 7
+		safe_write(fd, ZSTR_VAL(s.s), ZSTR_LEN(s.s));
+#else
 		safe_write(fd, s.c, s.len);
+#endif
 
 		smart_str_free(&s);
+#if PHP_MAJOR_VERSION >= 7
+		s.s = NULL;
+#else
 		s.c = NULL;
+#endif
 	}
 
 	zval_dtor(&backtrace);

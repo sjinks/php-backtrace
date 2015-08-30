@@ -40,7 +40,12 @@ void signal_handler(int sig, siginfo_t* si, void* unused)
 
 static void make_backtrace(int fd, zend_backtrace_globals* g TSRMLS_DC)
 {
-	smart_str s = { 0 };
+	smart_str s;
+#if PHP_MAJOR_VERSION >=7
+	s.s = NULL;
+#else
+	s.c = NULL;
+#endif
 
 	smart_str_appends(&s, "Script: ");
 	smart_str_appends(&s, SG(request_info).path_translated ? SG(request_info).path_translated : "???");
@@ -131,7 +136,12 @@ void do_backtrace(TSRMLS_D)
 #endif
 
 	{
-		smart_str s = { 0 };
+		smart_str s;
+#if PHP_MAJOR_VERSION >=7
+		s.s = NULL;
+#else
+		s.c = NULL;
+#endif
 
 		long int x = (long int)getpid();
 		smart_str_appends(&s, "PID: ");
@@ -159,7 +169,11 @@ void do_backtrace(TSRMLS_D)
 	}
 
 #ifdef ZTS
+#	if PHP_MAJOR_VERSION >= 7
+	zend_backtrace_globals* g = TSRMG_BULK(backtrace_globals_id, zend_backtrace_globals*);
+#	else
 	zend_backtrace_globals* g = (zend_backtrace_globals*)(*((void***)tsrm_ls))[TSRM_UNSHUFFLE_RSRC_ID(backtrace_globals_id)];
+#	endif
 #else
 	zend_backtrace_globals* g = &backtrace_globals;
 #endif
